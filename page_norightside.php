@@ -21,8 +21,18 @@ Template Name: Pagina senza B.L. DX
 
                 <h2 class="posttitle"><?php the_title(); ?></h2>
 
-                <?php $children = wp_list_pages('depth=1&title_li=&child_of='.$post->ID."&echo=0");
-                if($children && (get_option( 'pasw_submenu') != '3' && get_option( 'pasw_submenu') != '4')) {
+                <?php 
+// enzo costantini 12/04/2015 inizio modifica (Come già impostato nel tema si limita l'annidamento al primo livello)
+                $root_post = $post;
+                while ($root_post->post_parent != 0)
+                {
+                   $root_post = &get_post($root_post->post_parent);
+                   
+                }
+                
+                $sub_pages =  (wp_list_pages('depth=1&title_li=&child_of='.$root_post->ID."&echo=0")) || (get_post($post->post_parent));
+   
+                if($sub_pages && (get_option( 'pasw_submenu') != '3' && get_option( 'pasw_submenu') != '4')) {
                     //Genera CSS
                     if (get_option( 'pasw_submenu') == '0') { //Verticale SX
 
@@ -37,12 +47,13 @@ Template Name: Pagina senza B.L. DX
                     } ?>
                 <div class="sotto-pagine" <?php echo $subcss; ?>>
                     <ul>
-                        <?php wp_list_pages('depth=1&title_li=&child_of='.$post->ID); ?>
+                        <?php wp_list_pages('depth=1&title_li=&child_of='.$root_post->ID); // $root_post invece di $post  ?>   
                     </ul>
                 </div>
                 <?php if (get_option( 'pasw_submenu') == '2') { echo '<div class="clear"></div>';
                     }
-                }?>
+// enzo costantini 12/04/2015 fine modifica                
+                }?>               
                 <div class="postentry">
                     <?php the_content(__('Leggi il resto &raquo;')); ?>
                 </div>

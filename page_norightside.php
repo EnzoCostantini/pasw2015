@@ -21,28 +21,63 @@ Template Name: Pagina senza B.L. DX
 
                 <h2 class="posttitle"><?php the_title(); ?></h2>
 
-                <?php $children = wp_list_pages('depth=1&title_li=&child_of='.$post->ID."&echo=0");
-                if($children && (get_option( 'pasw_submenu') != '3' && get_option( 'pasw_submenu') != '4')) {
-                    //Genera CSS
-                    if (get_option( 'pasw_submenu') == '0') { //Verticale SX
+<?php 
+// enzo costantini 17/04/2015 inizio modifica 
+global $sub_pages;
+global $root_post;
+global $menu_depth;
 
-                    } else if (get_option( 'pasw_submenu') == '1') { //Verticale DX
-                        $subcss=' style="float:right;"';
-                    } else if (get_option( 'pasw_submenu') == '2') { // Orizzontale
-                        $subcss=' style="width:100%;"';
-                        echo '
-                        <style type="text/css">
-                            .sotto-pagine li { float:left; }
-                        </style>';
-                    } ?>
+$is_group_page = get_post_meta($post->ID, '_is_group_page', true);
+$has_children = wp_list_pages("title_li=&echo=0&depth=1&child_of=".$post->ID) != false;
+$has_parent =  ($post->post_parent != 0) && (!get_post_meta($post->post_parent, '_is_group_page', true));
+$sub_pages = (($has_children) || ($has_parent)) && (!$is_group_page);
+
+if($sub_pages) {                                                                                                                                                      
+  
+  $root_post = $post;
+  $menu_depth = 1;
+
+  if($has_parent) {
+    
+    $root_post = get_post($post->post_parent); 
+    
+    if($has_children) {
+      $menu_depth = 2;
+    }     
+  }  
+}
+
+$pasw_submenu = get_option( 'pasw_submenu');  // visto che l'opzione viene usata più volte
+                                              // vale la pena usare una variabile
+if ($sub_pages && ($pasw_submenu < 3)) {
+  //Genera CSS
+  if ($pasw_submenu == 0) { //Verticale SX
+  
+  } 
+  else 
+  if ($pasw_submenu == 1) { //Verticale DX
+      $subcss=' style="float:right;"';
+  } 
+  else 
+  if ($pasw_submenu == 2) { // Orizzontale
+      $subcss=' style="width:100%;"';
+      echo '<style type="text/css">
+              .sotto-pagine li { float:left; }
+            </style>';       
+  } ?>
                 <div class="sotto-pagine" <?php echo $subcss; ?>>
                     <ul>
-                        <?php wp_list_pages('depth=1&title_li=&child_of='.$post->ID); ?>
+                        <?php wp_list_pages('depth=1&title_li=&child_of='.$root_post->ID); ?>   
                     </ul>
                 </div>
-                <?php if (get_option( 'pasw_submenu') == '2') { echo '<div class="clear"></div>';
-                    }
-                }?>
+<?php 
+  if ($pasw_submenu == 2) { 
+    echo '<div class="clear"></div>';
+  }
+}                                                                                                                 
+// enzo costantini 17/04/2015 fine modifica                
+?> 
+
                 <div class="postentry">
                     <?php the_content(__('Leggi il resto &raquo;')); ?>
                 </div>

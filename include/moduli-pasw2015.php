@@ -47,6 +47,14 @@
 			} 
         }
 
+        if (isset($_GET['switchpost_tpl']) || wp_verify_nonce($_GET['switchpost_tpl'], 'switchpost_tpl')) {
+            if (get_option('pasw_post_tpl') == 0) {
+                update_option('pasw_post_tpl', '1');
+            } else {
+                update_option('pasw_post_tpl', '0');
+            }
+        }
+
         ?>
 
     <h2>Funzioni aggiuntive integrate</h2>
@@ -146,7 +154,26 @@
                 </div>
             </td>
         </tr>
-
+    
+    <tr class="<?php if (get_option('pasw_post_tpl') == 0) { echo 'in'; } ?>active"><th scope="row" class="check-column"></th>
+            <td class="plugin-title"><strong>Modelli articoli </strong><div class="row-actions visible">
+                <span class="activate">
+                    <a href="<?php print wp_nonce_url(admin_url('admin.php?page=pasw2015-moduli'), 'switchpost_tpl', 'switchpost_tpl');?>" class="edit">
+                        <?php if (get_option('pasw_post_tpl') == 0) { echo 'Attiva'; } else { echo 'Disattiva'; } ?>
+                    </a>
+                    &bull;
+                    <?php if (get_option('pasw_post_tpl') != 0) {?>
+                       <a href="<?php print wp_nonce_url(admin_url('admin.php?page=pasw-post-templates'));?>" class="edit">Impostazioni</a>
+                    <?php } ?>
+                </span>
+            </td>
+            <td class="column-description desc">
+                <div class="plugin-description">
+                    <p>Questo modulo attiva la gestione dei modelli di articolo (simile ai modelli di pagina)</p>
+                </div>
+            </td>
+        </tr>
+    
     </table>
 
     <?php }
